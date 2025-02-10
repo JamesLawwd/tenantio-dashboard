@@ -2,6 +2,7 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/dashboard/app-sidebar"
 import { StatsCards } from "@/components/dashboard/stats-cards"
+import { RecentPayments } from "@/components/dashboard/recent-payments"
 
 const Index = () => {
   return (
@@ -20,10 +21,7 @@ const Index = () => {
           </div>
           <div className="space-y-8 animate-fade-up">
             <StatsCards />
-            <div className="rounded-lg border bg-card text-card-foreground shadow-sm p-6">
-              <h2 className="text-lg font-semibold mb-4">Recent Activity</h2>
-              <p className="text-muted-foreground">No recent activity to show.</p>
-            </div>
+            <RecentPayments />
           </div>
         </main>
       </div>
