@@ -7,7 +7,7 @@ import { AddTenantDialog } from "@/components/dashboard/add-tenant-dialog"
 import { Button } from "@/components/ui/button"
 import { tenants } from "@/data/mock-data"
 import { useToast } from "@/hooks/use-toast"
-import { Trash2 } from "lucide-react"
+import { Check, X, Trash2 } from "lucide-react"
 
 const Index = () => {
   const { toast } = useToast()
@@ -53,11 +53,18 @@ const Index = () => {
                       key={tenant.id}
                       className="flex items-center justify-between py-4"
                     >
-                      <div>
-                        <p className="font-medium">{tenant.name}</p>
-                        <p className="text-sm text-muted-foreground">
-                          Unit {tenant.unit} • KES {tenant.rentAmount.toLocaleString()}
-                        </p>
+                      <div className="flex items-center gap-3">
+                        {tenant.hasPaidRent ? (
+                          <Check className="h-5 w-5 text-[#8B5CF6]" />
+                        ) : (
+                          <X className="h-5 w-5 text-[#ea384c]" />
+                        )}
+                        <div>
+                          <p className="font-medium">{tenant.name}</p>
+                          <p className="text-sm text-muted-foreground">
+                            Unit {tenant.unit} • KES {tenant.rentAmount.toLocaleString()}
+                          </p>
+                        </div>
                       </div>
                       <Button
                         variant="ghost"
