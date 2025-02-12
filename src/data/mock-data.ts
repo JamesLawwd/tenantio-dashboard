@@ -4,6 +4,7 @@ export interface Tenant {
   unit: string;
   rentAmount: number;
   hasPaidRent?: boolean;
+  moveInDate: string;
 }
 
 export interface RentPayment {
@@ -16,16 +17,16 @@ export interface RentPayment {
 }
 
 export const tenants: Tenant[] = [
-  { id: "1", name: "John Kamau", unit: "A1", rentAmount: 45000, hasPaidRent: true },
-  { id: "2", name: "Sarah Wanjiku", unit: "B2", rentAmount: 38000, hasPaidRent: true },
-  { id: "3", name: "Michael Odhiambo", unit: "C3", rentAmount: 42000, hasPaidRent: false },
-  { id: "4", name: "Alice Muthoni", unit: "A4", rentAmount: 40000, hasPaidRent: true },
-  { id: "5", name: "David Kiprop", unit: "B5", rentAmount: 45000, hasPaidRent: false },
-  { id: "6", name: "Grace Akinyi", unit: "C6", rentAmount: 38000, hasPaidRent: true },
-  { id: "7", name: "Peter Njoroge", unit: "A7", rentAmount: 42000, hasPaidRent: false },
-  { id: "8", name: "Mary Adhiambo", unit: "B8", rentAmount: 40000, hasPaidRent: true },
-  { id: "9", name: "James Maina", unit: "C9", rentAmount: 45000, hasPaidRent: false },
-  { id: "10", name: "Lucy Wairimu", unit: "A10", rentAmount: 38000, hasPaidRent: true },
+  { id: "1", name: "John Kamau", unit: "A1", rentAmount: 45000, hasPaidRent: true, moveInDate: "2024-01-15" },
+  { id: "2", name: "Sarah Wanjiku", unit: "B2", rentAmount: 38000, hasPaidRent: true, moveInDate: "2024-02-01" },
+  { id: "3", name: "Michael Odhiambo", unit: "C3", rentAmount: 42000, hasPaidRent: false, moveInDate: "2023-12-10" },
+  { id: "4", name: "Alice Muthoni", unit: "A4", rentAmount: 40000, hasPaidRent: true, moveInDate: "2024-01-20" },
+  { id: "5", name: "David Kiprop", unit: "B5", rentAmount: 45000, hasPaidRent: false, moveInDate: "2023-11-05" },
+  { id: "6", name: "Grace Akinyi", unit: "C6", rentAmount: 38000, hasPaidRent: true, moveInDate: "2024-02-15" },
+  { id: "7", name: "Peter Njoroge", unit: "A7", rentAmount: 42000, hasPaidRent: false, moveInDate: "2023-10-30" },
+  { id: "8", name: "Mary Adhiambo", unit: "B8", rentAmount: 40000, hasPaidRent: true, moveInDate: "2024-01-10" },
+  { id: "9", name: "James Maina", unit: "C9", rentAmount: 45000, hasPaidRent: false, moveInDate: "2023-12-20" },
+  { id: "10", name: "Lucy Wairimu", unit: "A10", rentAmount: 38000, hasPaidRent: true, moveInDate: "2024-02-05" },
 ];
 
 export const recentPayments: RentPayment[] = [

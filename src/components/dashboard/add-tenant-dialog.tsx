@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label"
 import { useState } from "react"
 import { tenants } from "@/data/mock-data"
 import { useToast } from "@/hooks/use-toast"
+import { format } from "date-fns"
 
 export function AddTenantDialog() {
   const { toast } = useToast()
@@ -30,6 +31,8 @@ export function AddTenantDialog() {
       name,
       unit,
       rentAmount: Number(rentAmount),
+      hasPaidRent: false,
+      moveInDate: format(new Date(), 'yyyy-MM-dd')
     }
     
     tenants.push(newTenant)
