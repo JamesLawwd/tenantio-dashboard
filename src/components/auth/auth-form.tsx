@@ -25,47 +25,64 @@ export function AuthForm() {
     }
     
     setIsLoading(true)
+    console.log('Starting authentication process...')
 
     try {
-      console.log('Attempting authentication...')
       if (isSignUp) {
+        console.log('Attempting signup...')
         const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback`
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
           }
         })
+        
         console.log('Signup response:', { data, error })
-        if (error) throw error
-        toast({
-          title: "Check your email",
-          description: "We've sent you a verification link",
-        })
+        
+        if (error) {
+          throw error
+        }
+        
+        if (data?.user) {
+          toast({
+            title: "Success",
+            description: "Please check your email to verify your account",
+          })
+        }
       } else {
+        console.log('Attempting signin...')
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
+        
         console.log('Signin response:', { data, error })
-        if (error) throw error
-        toast({
-          title: "Success",
-          description: "You have been logged in",
-        })
+        
+        if (error) {
+          throw error
+        }
+
+        if (data.session) {
+          toast({
+            title: "Success",
+            description: "You have been logged in successfully",
+          })
+        }
       }
     } catch (error: any) {
-      console.error('Authentication error:', error)
+      console.error('Detailed authentication error:', error)
+      
       let errorMessage = "An unexpected error occurred. Please try again."
       
-      if (error.message === "Failed to fetch") {
-        errorMessage = "Unable to connect to the authentication service. Please check your internet connection and try again."
+      if (error.message.includes('Failed to fetch') || error.message.includes('network')) {
+        errorMessage = "Unable to connect to the authentication service. Please check your internet connection and try again. If the problem persists, the service might be temporarily unavailable."
       } else if (error.message) {
         errorMessage = error.message
       }
       
       toast({
-        title: "Error",
+        title: "Authentication Error",
         description: errorMessage,
         variant: "destructive",
       })
