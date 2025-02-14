@@ -15,6 +15,15 @@ export function AuthForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!email || !password) {
+      toast({
+        title: "Error",
+        description: "Please enter both email and password",
+        variant: "destructive",
+      })
+      return
+    }
+    
     setIsLoading(true)
 
     try {
@@ -24,10 +33,7 @@ export function AuthForm() {
           email,
           password,
           options: {
-            data: {
-              role: 'tenant',
-            },
-            emailRedirectTo: window.location.origin
+            emailRedirectTo: `${window.location.origin}/auth/callback`
           }
         })
         console.log('Signup response:', { data, error })
@@ -50,9 +56,17 @@ export function AuthForm() {
       }
     } catch (error: any) {
       console.error('Authentication error:', error)
+      let errorMessage = "An unexpected error occurred. Please try again."
+      
+      if (error.message === "Failed to fetch") {
+        errorMessage = "Unable to connect to the authentication service. Please check your internet connection and try again."
+      } else if (error.message) {
+        errorMessage = error.message
+      }
+      
       toast({
         title: "Error",
-        description: error.message || "Failed to connect to authentication service. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       })
     } finally {
@@ -90,6 +104,7 @@ export function AuthForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
+            minLength={6}
           />
         </div>
         <Button className="w-full" type="submit" disabled={isLoading}>
