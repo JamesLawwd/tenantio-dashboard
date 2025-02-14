@@ -24,7 +24,13 @@ export const supabase = createClient(
   }
 )
 
-// Add an event listener to log any Supabase errors
-supabase.auth.onError((error) => {
-  console.error('Supabase Auth Error:', error)
+// Listen for auth state changes instead of using the deprecated onError
+supabase.auth.onAuthStateChange((event, session) => {
+  if (event === 'SIGNED_OUT') {
+    console.log('User signed out')
+  } else if (event === 'SIGNED_IN') {
+    console.log('User signed in:', session?.user?.email)
+  } else if (event === 'USER_UPDATED') {
+    console.log('User updated:', session?.user?.email)
+  }
 })
