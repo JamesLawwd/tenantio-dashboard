@@ -18,26 +18,30 @@ export function AuthForm() {
     setIsLoading(true)
 
     try {
+      console.log('Attempting authentication...')
       if (isSignUp) {
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email,
           password,
           options: {
             data: {
-              role: 'tenant', // Default role for new signups
-            }
+              role: 'tenant',
+            },
+            emailRedirectTo: window.location.origin
           }
         })
+        console.log('Signup response:', { data, error })
         if (error) throw error
         toast({
           title: "Check your email",
           description: "We've sent you a verification link",
         })
       } else {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         })
+        console.log('Signin response:', { data, error })
         if (error) throw error
         toast({
           title: "Success",
@@ -45,9 +49,10 @@ export function AuthForm() {
         })
       }
     } catch (error: any) {
+      console.error('Authentication error:', error)
       toast({
         title: "Error",
-        description: error.message,
+        description: error.message || "Failed to connect to authentication service. Please try again.",
         variant: "destructive",
       })
     } finally {
