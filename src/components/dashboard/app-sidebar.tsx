@@ -1,6 +1,7 @@
 
-import { Home, Users, MessageSquare, BarChart3, Settings } from "lucide-react"
+import { Home, Users, MessageSquare, BarChart3, Settings, Menu } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
+import { useIsMobile } from "@/hooks/use-mobile"
 import {
   Sidebar,
   SidebarContent,
@@ -10,6 +11,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  useSidebar,
 } from "@/components/ui/sidebar"
 
 const menuItems = [
@@ -22,12 +24,29 @@ const menuItems = [
 
 export function AppSidebar() {
   const location = useLocation();
+  const isMobile = useIsMobile();
+  const { collapsed, setCollapsed } = useSidebar();
   
   return (
-    <Sidebar>
+    <Sidebar
+      defaultCollapsed={isMobile}
+      className={isMobile ? "w-[70px]" : ""}
+    >
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <div className="flex items-center justify-between px-4 py-2">
+            <SidebarGroupLabel className={isMobile ? "sr-only" : ""}>
+              Management
+            </SidebarGroupLabel>
+            {isMobile && (
+              <button 
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => setCollapsed(!collapsed)}
+              >
+                <Menu size={20} />
+              </button>
+            )}
+          </div>
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item) => (
@@ -38,7 +57,9 @@ export function AppSidebar() {
                   >
                     <Link to={item.url} className="flex items-center gap-3">
                       <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
+                      <span className={isMobile && collapsed ? "sr-only" : ""}>
+                        {item.title}
+                      </span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

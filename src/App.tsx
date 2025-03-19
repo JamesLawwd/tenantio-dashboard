@@ -11,6 +11,7 @@ import Tenants from "./pages/Tenants"
 import Reports from "./pages/Reports"
 import Settings from "./pages/Settings"
 
+// Create a client
 const queryClient = new QueryClient()
 
 const App = () => (
@@ -19,14 +20,16 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/tenants" element={<Tenants />} />
-          <Route path="/reports" element={<Reports />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <div className="min-h-screen bg-background">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/messages" element={<Messages />} />
+            <Route path="/tenants" element={<Tenants />} />
+            <Route path="/reports" element={<Reports />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </div>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
