@@ -9,6 +9,7 @@ import Messages from "./pages/Messages"
 import NotFound from "./pages/NotFound"
 import Tenants from "./pages/Tenants"
 import Reports from "./pages/Reports"
+import Settings from "./pages/Settings"
 
 const queryClient = new QueryClient()
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/messages" element={<Messages />} />
           <Route path="/tenants" element={<Tenants />} />
           <Route path="/reports" element={<Reports />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
