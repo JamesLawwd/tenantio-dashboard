@@ -13,16 +13,53 @@ import {
   FileSpreadsheet, 
   Filter, 
   Printer, 
-  RefreshCw 
+  RefreshCw,
+  Check,
+  X
 } from "lucide-react"
 import { RevenueChart } from "@/components/reports/revenue-chart"
 import { TenantOccupancyChart } from "@/components/reports/tenant-occupancy-chart"
 import { RentPaymentStatus } from "@/components/reports/rent-payment-status"
 import { MonthlyExpensesChart } from "@/components/reports/monthly-expenses-chart"
+import { format } from "date-fns"
+import { Calendar as CalendarComponent } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
 
 const Reports = () => {
   const { toast } = useToast()
   const [selectedPeriod, setSelectedPeriod] = useState("month")
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  })
+  
+  const [isFilterDialogOpen, setIsFilterDialogOpen] = useState(false)
+  const [propertyFilter, setPropertyFilter] = useState("all")
+  const [tenantStatusFilter, setTenantStatusFilter] = useState("all")
+  const [minAmount, setMinAmount] = useState("")
+  const [maxAmount, setMaxAmount] = useState("")
 
   const handleDownloadReport = () => {
     toast({
@@ -44,6 +81,35 @@ const Reports = () => {
       description: "Preparing document for printing.",
     })
     window.print()
+  }
+
+  const handleApplyFilters = () => {
+    toast({
+      title: "Filters Applied",
+      description: "The report has been filtered based on your criteria.",
+    })
+    setIsFilterDialogOpen(false)
+  }
+  
+  const handleResetFilters = () => {
+    setPropertyFilter("all")
+    setTenantStatusFilter("all")
+    setMinAmount("")
+    setMaxAmount("")
+    toast({
+      title: "Filters Reset",
+      description: "All filters have been reset to default values.",
+    })
+  }
+
+  const formatDateRange = () => {
+    if (dateRange.from && dateRange.to) {
+      return `${format(dateRange.from, "MMM d, yyyy")} - ${format(dateRange.to, "MMM d, yyyy")}`
+    }
+    if (dateRange.from) {
+      return `From ${format(dateRange.from, "MMM d, yyyy")}`
+    }
+    return "Date Range"
   }
 
   return (
@@ -91,11 +157,29 @@ const Reports = () => {
                   </TabsList>
 
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm">
-                      <Calendar className="mr-2 h-4 w-4" />
-                      <span>Date Range</span>
-                    </Button>
-                    <Button variant="outline" size="sm">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button variant="outline" size="sm">
+                          <Calendar className="mr-2 h-4 w-4" />
+                          <span>{formatDateRange()}</span>
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="end">
+                        <CalendarComponent
+                          mode="range"
+                          selected={dateRange}
+                          onSelect={setDateRange}
+                          numberOfMonths={2}
+                          className="p-3 pointer-events-auto"
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setIsFilterDialogOpen(true)}
+                    >
                       <Filter className="mr-2 h-4 w-4" />
                       <span>Filters</span>
                     </Button>
@@ -158,6 +242,89 @@ const Reports = () => {
           </div>
         </main>
       </div>
+
+      {/* Filters Dialog */}
+      <Dialog open={isFilterDialogOpen} onOpenChange={setIsFilterDialogOpen}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Filter Reports</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="property" className="text-right text-sm">
+                Property
+              </label>
+              <Select
+                value={propertyFilter}
+                onValueChange={setPropertyFilter}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="All Properties" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Properties</SelectItem>
+                  <SelectItem value="sunflower">Sunflower Apartments</SelectItem>
+                  <SelectItem value="palms">The Palms Estate</SelectItem>
+                  <SelectItem value="greenview">Greenview Heights</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="tenant-status" className="text-right text-sm">
+                Tenant Status
+              </label>
+              <Select
+                value={tenantStatusFilter}
+                onValueChange={setTenantStatusFilter}
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="late">Late Payment</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="min-amount" className="text-right text-sm">
+                Min Amount
+              </label>
+              <Input
+                id="min-amount"
+                value={minAmount}
+                onChange={(e) => setMinAmount(e.target.value)}
+                className="col-span-3"
+                placeholder="0"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="max-amount" className="text-right text-sm">
+                Max Amount
+              </label>
+              <Input
+                id="max-amount"
+                value={maxAmount}
+                onChange={(e) => setMaxAmount(e.target.value)}
+                className="col-span-3"
+                placeholder="100000"
+              />
+            </div>
+          </div>
+          <DialogFooter className="flex justify-between">
+            <Button variant="outline" onClick={handleResetFilters} type="button">
+              <X className="mr-2 h-4 w-4" />
+              Reset
+            </Button>
+            <Button onClick={handleApplyFilters} type="submit">
+              <Check className="mr-2 h-4 w-4" />
+              Apply Filters
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </SidebarProvider>
   )
 }

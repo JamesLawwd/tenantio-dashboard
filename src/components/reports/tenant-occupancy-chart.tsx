@@ -1,112 +1,128 @@
 
-import { useState } from 'react';
-import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
 
-const data = [
-  { month: 'Jan', occupancyRate: 80 },
-  { month: 'Feb', occupancyRate: 85 },
-  { month: 'Mar', occupancyRate: 90 },
-  { month: 'Apr', occupancyRate: 92 },
-  { month: 'May', occupancyRate: 88 },
-  { month: 'Jun', occupancyRate: 93 },
+// Sample data for the tenant occupancy chart
+const occupancyData = [
+  { property: 'Sunflower Apartments', occupancy: 85, vacant: 15, color: '#10B981' },
+  { property: 'The Palms Estate', occupancy: 92, vacant: 8, color: '#8B5CF6' },
+  { property: 'Greenview Heights', occupancy: 78, vacant: 22, color: '#3B82F6' },
+  { property: 'Riverside Towers', occupancy: 88, vacant: 12, color: '#F59E0B' },
 ];
 
-const unitTypes = [
-  { type: 'One Bedroom', total: 6, occupied: 6, color: '#8B5CF6' },
-  { type: 'Two Bedroom', total: 8, occupied: 7, color: '#3B82F6' },
-  { type: 'Three Bedroom', total: 4, occupied: 3, color: '#10B981' },
+// Data for turnover rates
+const turnoverData = [
+  { month: 'Jan', rate: 5 },
+  { month: 'Feb', rate: 3 },
+  { month: 'Mar', rate: 7 },
+  { month: 'Apr', rate: 2 },
+  { month: 'May', rate: 4 },
+  { month: 'Jun', rate: 6 },
 ];
+
+// Custom tooltip for the bar chart
+const CustomTooltip = ({ active, payload }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-background border border-border p-3 rounded-md shadow-md">
+        <p className="font-medium">{payload[0].payload.property}</p>
+        <p className="text-emerald-500">Occupancy: {payload[0].value}%</p>
+        <p className="text-red-500">Vacant: {payload[0].payload.vacant}%</p>
+      </div>
+    );
+  }
+
+  return null;
+};
 
 export function TenantOccupancyChart() {
-  const currentOccupancy = 83;
-
   return (
-    <div className="w-full space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="col-span-1">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-medium mb-2">Current Occupancy</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-3xl font-bold">{currentOccupancy}%</span>
-                <div className="bg-green-50 text-green-700 py-1 px-2.5 rounded-md text-xs font-medium">
-                  +5% from last month
-                </div>
-              </div>
-              <Progress value={currentOccupancy} className="h-2" />
-              <p className="text-sm text-muted-foreground">10 out of 12 units occupied</p>
-            </div>
-          </CardContent>
-        </Card>
-        
-        <Card className="col-span-1 md:col-span-3">
-          <CardContent className="p-6">
-            <h3 className="text-lg font-medium mb-4">Occupancy Trend</h3>
-            <div className="h-[200px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={data}
-                  margin={{ top: 10, right: 10, left: 0, bottom: 0 }}
-                >
-                  <defs>
-                    <linearGradient id="colorOcc" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.8}/>
-                      <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0.1}/>
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                  <XAxis dataKey="month" tickLine={false} />
-                  <YAxis 
-                    domain={[0, 100]}
-                    tickFormatter={(value) => `${value}%`}
-                    tickLine={false}
-                    axisLine={false}
-                  />
-                  <Tooltip 
-                    formatter={(value) => [`${value}%`, 'Occupancy Rate']}
-                    contentStyle={{ 
-                      borderRadius: '8px', 
-                      border: '1px solid #e2e8f0',
-                      boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)'
-                    }}
-                  />
-                  <Area 
-                    type="monotone" 
-                    dataKey="occupancyRate" 
-                    stroke="#8B5CF6" 
-                    fillOpacity={1} 
-                    fill="url(#colorOcc)" 
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <h3 className="text-sm font-medium mb-4">Current Occupancy by Property</h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={occupancyData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis 
+                  dataKey="property" 
+                  tick={{ fontSize: 12 }} 
+                  tickFormatter={(value) => value.split(' ')[0]}
+                />
+                <YAxis 
+                  tickFormatter={(value) => `${value}%`} 
+                  domain={[0, 100]} 
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip content={<CustomTooltip />} />
+                <Bar dataKey="occupancy" radius={[4, 4, 0, 0]}>
+                  {occupancyData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+        <div>
+          <h3 className="text-sm font-medium mb-4">Tenant Turnover Rate (Last 6 Months)</h3>
+          <div className="h-[300px] w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={turnoverData}
+                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              >
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis dataKey="month" tick={{ fontSize: 12 }} />
+                <YAxis 
+                  tickFormatter={(value) => `${value}%`} 
+                  domain={[0, 10]} 
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(value) => [`${value}%`, 'Turnover Rate']}
+                  contentStyle={{ 
+                    borderRadius: '8px', 
+                    border: '1px solid #e2e8f0',
+                    boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)'
+                  }}
+                />
+                <Bar dataKey="rate" fill="#F87171" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
-
-      <Card>
-        <CardContent className="p-6">
-          <h3 className="text-lg font-medium mb-4">Occupancy by Unit Type</h3>
-          <div className="space-y-6">
-            {unitTypes.map((unit, index) => (
-              <div key={index}>
-                <div className="flex justify-between mb-2">
-                  <span className="font-medium">{unit.type}</span>
-                  <span className="text-sm text-muted-foreground">{unit.occupied} / {unit.total} units</span>
+      
+      <div className="space-y-4">
+        <h3 className="text-sm font-medium">Overall Portfolio Statistics</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {occupancyData.map((property, index) => (
+            <div key={index} className="bg-card rounded-lg p-4 border">
+              <h4 className="text-sm font-medium mb-2">{property.property}</h4>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Occupancy</span>
+                  <span className="font-medium">{property.occupancy}%</span>
                 </div>
                 <Progress 
-                  value={(unit.occupied / unit.total) * 100} 
-                  className="h-2"
-                  style={{ backgroundColor: '#f1f5f9' }}
-                  indicatorClassName={`bg-[${unit.color}]`}
+                  value={property.occupancy} 
+                  className="h-2" 
+                  style={{ backgroundColor: "#f1f5f9" }}
                 />
+                <div className="flex justify-between items-center text-xs text-muted-foreground mt-1">
+                  <span>{property.occupancy < 80 ? 'Below Target' : 'On Target'}</span>
+                  <span>{property.vacant}% vacant units</span>
+                </div>
               </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
