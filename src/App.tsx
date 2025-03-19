@@ -8,6 +8,7 @@ import Index from "./pages/Index"
 import Messages from "./pages/Messages"
 import NotFound from "./pages/NotFound"
 import Tenants from "./pages/Tenants"
+import Reports from "./pages/Reports"
 
 const queryClient = new QueryClient()
 
@@ -21,6 +22,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/messages" element={<Messages />} />
           <Route path="/tenants" element={<Tenants />} />
+          <Route path="/reports" element={<Reports />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
